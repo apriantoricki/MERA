@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melah Raya | Penyewaan Alat Berat & Layanan Pertambangan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLE WARNA (MERAH, KUNING, PUTIH) --- */
+		:root {
+            --primary-red: #D32F2F;
+            --dark-red: #9A0007;
+            --accent-yellow: #FFC107;
+            --light-bg-red: #FFEBEE;
+            --charcoal: #1E293B;
+            --white: #FFFFFF;
+            --bg-clean: #F1F5F9;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --max-width-global: 1200px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--charcoal);
+            line-height: 1.6;
+            background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 50%, #CBD5E1 100%);
+            background-attachment: fixed;
+        }
+
+        /* --- DASHBOARD HEADER FLOATING STYLE --- */
+        .header-wrapper {
+            position: fixed;
+            top: 1.25rem;
+            left: 0;
+            width: 100%;
+            padding: 0 4vw;
+            z-index: 1000;
+        }
+
+        .main-header {
+            max-width: var(--max-width-global);
+            width: 100%;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(20px) saturate(190%);
+            -webkit-backdrop-filter: blur(20px) saturate(190%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px -10px rgba(30, 41, 59, 0.1), 
+                        0 1px 3px rgba(30, 41, 59, 0.05);
+            padding: 1rem 2rem; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .logo {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--charcoal);
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .logo span { color: var(--primary-red); }
+
+        /* --- MENU NAVIGASI AUTOFIT --- */
+        .nav-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 2.5rem;
+        }
+        
+        .nav-links { 
+            display: flex; 
+            gap: 2rem; 
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--charcoal);
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
+            display: inline-block;
+            white-space: nowrap;
+            border-radius: 8px;
+        }
+
+        .nav-links a:hover {
+            color: var(--charcoal); 
+            background-color: rgba(255, 193, 7, 0.3); 
+			transform: translateY(-1px);
+        }
+
+        /* BUTTON DROPDOWN */
+        .dropdown { position: relative; }
+        .dropdown-toggle {
+            background: var(--primary-red); 
+            color: var(--white); 
+            border: none;
+            width: 36px; 
+            height: 36px; 
+            border-radius: 8px; 
+            font-size: 0.65rem;
+            font-weight: 600; 
+            cursor: pointer;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .dropdown:hover .dropdown-toggle { background-color: var(--dark-red); transform: scale(1.05); }
+
+        .dropdown-menu {
+            position: absolute; top: calc(100% + 14px); right: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            min-width: 180px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            list-style: none; overflow: hidden; opacity: 0; visibility: hidden;
+            transform: translateY(10px); transition: var(--transition);
+            z-index: 1100;
+        }
+
+        .dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu a { display: block; padding: 0.85rem 1.25rem; text-decoration: none; color: var(--charcoal); font-size: 0.9rem; font-weight: 500; transition: var(--transition); }
+        .dropdown-menu a:hover { background-color: rgba(213, 47, 47, 0.05); color: var(--primary-red); }
+
+        /* Sembunyikan tombol hamburger di layar besar */
+		.hamburger { display: none; cursor: pointer; font-size: 1.5rem; color: var(--charcoal); }
+
+        /* --- LAYOUT UTAMA --- */
+        .main-wrapper { 
+            padding-top: 110px; 
+        }
+
+        /* --- INTERACTIVE TEXTBOX CARDS --- */
+        .interactive-card {
+            background-color: rgba(255, 255, 255, 0.5);
+			backdrop-filter: blur(25px) saturate(200%);
+			-webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: var(--radius);
+            padding: 3rem 2.5rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .interactive-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.08);
+            border-color: rgba(213, 47, 47, 0.4);
+        }
+
+        .interactive-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--primary-red), var(--accent-yellow));
+            transform: scaleX(0); transition: var(--transition); transform-origin: left;
+        }
+        .interactive-card:hover::before { transform: scaleX(1); }
+
+        /* SEKSI HERO (PROFIL) - DENGAN EFEK PARALLAX SEPERTI KONTAK */
+        .hero-section { 
+            background-image: url('Foto_2.jpeg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 5rem 2rem;
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        /* Overlay gelap untuk seksi hero agar kontras */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        /* Membungkus kartu di profil agar berada di tengah dan di atas overlay */
+        .hero-container {
+            max-width: var(--max-width-global);
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
+
+        /* Penyesuaian khusus kartu profil modern agar efek blur lebih menonjol */
+        .hero-container .interactive-card {
+            background-color: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(25px) saturate(210%);
+            -webkit-backdrop-filter: blur(25px) saturate(210%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-badge { display: inline-block; background-color: var(--light-bg-red); color: var(--primary-red); padding: 0.4rem 1rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; width: max-content; }
+        .hero-section h1 { font-size: 3rem; font-weight: 700; line-height: 1.25; letter-spacing: -1.5px; margin-bottom: 1.5rem; color: var(--charcoal); }
+        .hero-section h1 span { color: var(--primary-red); }
+        .hero-section p { font-size: 1.1rem; color: var(--charcoal); font-weight: 500; text-align: justify; }
+
+        /* --- SEKSI STATISTIK --- */
+        .stats-container { max-width: var(--max-width-global); margin: 0 auto 3rem auto; padding: 0 2rem; }
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+            gap: 1.5rem; 
+        }
+        
+        .stat-card {
+            background-color: rgba(255, 255, 255, 0.45); 
+			backdrop-filter: blur(25px) saturate(200%);
+			-webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.5); 
+            border-radius: var(--radius);
+            padding: 2.5rem 1rem; 
+            text-align: center; 
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+        }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--accent-yellow); }
+        
+        .stat-card .value { 
+            font-size: clamp(1.8rem, 2.5vw, 2.3rem); 
+            font-weight: 700; 
+            color: var(--primary-red); 
+            margin-bottom: 0.5rem; 
+            white-space: nowrap; 
+        }
+        .stat-card .label { 
+            font-size: 0.75rem; 
+            color: var(--text-muted); 
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        /* --- SEKSI SLIDER FOTO --- */
+        .slider-section { max-width: var(--max-width-global); margin: 0 auto 3rem auto; padding: 0 2rem; perspective: 1500px; }
+        .slider-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; }
+        .slider-title span { color: var(--primary-red); }
+        
+        .slider-container { 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: var(--radius); 
+            border: 1px solid var(--border-color); 
+            background-color: transparent; 
+            transform-style: preserve-3d; 
+            transition: transform 0.1s linear, box-shadow 0.3s ease;
+        }
+        .slider-section:hover .slider-container { box-shadow: 0 30px 60px rgba(30, 41, 59, 0.15); }
+        
+        .slides { 
+            display: none; 
+            width: 100%; 
+            height: 480px; 
+            position: relative; 
+            transform-style: preserve-3d; 
+            cursor: pointer;
+        }
+        
+        .slides img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transform: translateZ(20px) scale(1); 
+            display: block;
+        }
+        
+		/* --- EDIT SCRIPT ANDA PADA BAGIAN INI --- */
+		.prev, .next { 
+			cursor: pointer; 
+			position: absolute; 
+			top: 50%; 
+			width: 60px;       
+			height: 60px;      
+			margin-top: -30px; 
+			color: white; 
+			font-weight: bold; 
+			font-size: 16px; 
+			background-color: rgba(30, 41, 59, 0.5); /* Kembali ke charcoal transparan */
+			border: 1px solid rgba(255, 255, 255, 0.2); 
+			
+			border-radius: 50%; 
+			
+			z-index: 100; 
+			transform: translateZ(100px); 
+			transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.3s ease, box-shadow 0.3s ease; /* Transisi warna dibuat lebih cepat (0.2s) agar tidak lambat kembali normal */
+			touch-action: manipulation; 
+			
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			outline: none; /* Menghilangkan garis biru/hitam fokus bawaan browser */
+		}
+
+		/* Mengatur posisi tombol kiri dan kanan */
+		.prev { left: 1rem; }
+		.next { right: 1rem; }
+
+		/* HANYA BERIKAN EFEK MERAH SAAT KURSOR MOUSE BENAR-BENAR BERADA DI ATASNYA (DESKTOP) */
+		@media (hover: hover) {
+			.prev:hover, .next:hover { 
+				background-color: var(--dark-red); 
+				border-color: var(--charcoal);
+				transform: translateZ(110px) scale(1.1); 
+				box-shadow: 0 4px 12px rgba(213, 47, 47, 0.4);
+			}
+		}
+
+		/* UNTUK LAYAR SENTUH / HP / SAAT DIKLIK: WARNA MERAH HANYA MUNCUL SEKEJAP SAAT DITEKAN (ACTIVE) */
+		.prev:active, .next:active { 
+			background-color: var(--dark-red) !important; 
+			border-color: var(--charcoal) !important;
+			transform: translateZ(105px) scale(0.95); /* Sedikit mengecil saat ditekan, memberi efek feedback yang realistis */
+		}
+        
+		.slide-caption { 
+            color: #ffffff; 
+            font-size: 0.95rem; 
+            font-weight: 500;
+            padding: 100px 24px 25px 24px; 
+            position: absolute; 
+            bottom: 0; 
+            left: 0;
+            right: 0;
+            width: 100%; 
+            min-height: 150px; 
+            display: flex;
+            align-items: flex-end; 
+            pointer-events: none; 
+            
+            background: linear-gradient(to top, 
+                rgba(0, 0, 0, 0.95) 0%, 
+                rgba(0, 0, 0, 0.8) 40%, 
+                rgba(0, 0, 0, 0.35) 75%, 
+                rgba(0, 0, 0, 0) 100%); 
+            transform: translateZ(50px); 
+            
+            transition: opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.4s ease;
+            opacity: 1;
+            filter: blur(0px);
+        }
+
+        .slides.hide-text .slide-caption { 
+            opacity: 0 !important;        
+            filter: blur(10px) !important;    
+        }
+
+        .dot-container { text-align: center; margin-top: 1rem; }
+        .dot { cursor: pointer; height: 8px; width: 8px; margin: 0 4px; background-color: #CBD5E1; border-radius: 50%; display: inline-block; transition: var(--transition); }
+        .dot.active, .dot:hover { background-color: var(--primary-red); width: 20px; border-radius: 10px; }
+
+        /* KUSTOMISASI TOMBOL "SELENGKAPNYA" */
+        .btn-container-center {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.75rem;
+        }
+
+        .btn-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-red);
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(213, 47, 47, 0.2);
+            transition: var(--transition);
+            margin-top: auto;
+            width: max-content;
+        }
+
+        .btn-more:hover {
+            background-color: var(--dark-red);
+            box-shadow: 0 6px 18px rgba(154, 0, 7, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .btn-more::after {
+            content: '→';
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .btn-more:hover::after {
+            transform: translateX(4px);
+        }
+
+        /* SEKSI DETAIL ISI */
+        .content-section { max-width: var(--max-width-global); margin: 0 auto 3rem auto; padding: 0 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .content-box h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 1.25rem; }
+        .content-box h2 span { color: var(--primary-red); }
+        .content-box p { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.98rem; }
+        
+        .service-list { list-style: none; margin-bottom: 2rem; }
+        .service-list li { position: relative; padding-left: 1.75rem; margin-bottom: 0.85rem; font-weight: 500; }
+        .service-list li::before { content: "✓"; position: absolute; left: 0; color: var(--primary-red); font-weight: 700; }
+        
+        /* LOKASI OPERASIONAL LIST VERTIKAL */
+        .location-box { background-color: rgba(255, 255, 255, 0.3); padding: 1.5rem; border-radius: 10px; margin: 1.5rem 0 2rem 0; border: 1px solid rgba(255,255,255,0.2); }
+        .location-box h4 { font-size: 0.85rem; text-transform: uppercase; margin-bottom: 1rem; color: var(--charcoal); letter-spacing: 0.5px; }
+        
+        .location-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+        .location-item { 
+            background-color: rgba(255, 255, 255, 0.6); 
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            padding: 0.6rem 1rem; 
+            border-radius: 6px; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            color: var(--charcoal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .location-item:hover {
+            border-color: var(--primary-red);
+            background-color: rgba(213, 47, 47, 0.05);
+            transform: translateX(4px);
+        }
+        .location-item::before { content: "📍"; font-size: 0.95rem; }
+
+        /* --- SEKSI KONTAK --- */
+		.contact-section {
+			background-image: url('Foto_1.jpeg'); 
+			background-size: cover;
+			background-position: center;
+			background-attachment: fixed;
+			padding: 5rem 1rem;
+			position: relative;
+		}
+
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+		.contact-card-modern {
+			background: rgba(255, 255, 255, 0.55); 
+			backdrop-filter: blur(25px) saturate(200%); 
+			-webkit-backdrop-filter: blur(25px) saturate(200%);
+			padding: 2.5rem;
+			border-radius: 20px;
+			border: 1px solid rgba(255, 255, 255, 0.5);
+			box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+			max-width: 480px; 
+			margin: 0 auto;
+            position: relative;
+            z-index: 2;
+		}
+
+		.contact-header { margin-bottom: 2rem; text-align: center; }
+		.contact-header h2 { font-size: 1.6rem; color: var(--charcoal); margin-bottom: 0.3rem; }
+		.contact-header p { font-size: 0.95rem; color: var(--charcoal); font-weight: 500; opacity: 0.85; line-height: 1.5; }
+
+		.contact-grid-modern {
+			display: flex;
+			flex-direction: column;
+			gap: 0.8rem; 
+		}
+
+		.card-item {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+			padding: 1rem;
+			background: rgba(255, 255, 255, 0.4);
+			border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+			transition: var(--transition);
+			text-decoration: none;
+			color: var(--charcoal);
+			width: 100%;
+			min-width: 0; 
+		}
+
+		.card-item:hover {
+			background: var(--white);
+			transform: translateX(5px);
+			box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+		}
+
+		.icon-box { font-size: 1.2rem; background: rgba(255, 255, 255, 0.6); padding: 8px 10px; border-radius: 8px; }
+		.content { display: flex; flex-direction: column; flex: 1; min-width: 0;}
+		.label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
+		.value { font-weight: 600; font-size: 0.9rem; word-break: break-all; white-space: normal; }
+		
+        footer { background-color: var(--white); border-top: 1px solid var(--border-color); padding: 2.5rem; text-align: center; font-size: 0.9rem; color: var(--text-muted); }
+
+        /* --- RESPONSIVE MEDIA QUERIES --- */
+        @media (max-width: 820px) {
+            .main-header { padding: 1rem 1.5rem; }
+            .hamburger { display: block; } 
+
+            .nav-container {
+                display: none; 
+                position: absolute;
+                top: calc(100% + 10px);
+                left: 0;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.75); 
+                backdrop-filter: blur(20px) saturate(180%) !important; 
+                -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+                flex-direction: column;
+                padding: 1.5rem;
+                border-radius: 16px;
+                box-shadow: 0 15px 35px rgba(30, 41, 59, 0.15); 
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                gap: 1.5rem;
+            }
+
+            .nav-container.active { display: flex; }
+            .nav-links { flex-direction: column; align-items: center; gap: 1rem; width: 100%; }
+            .dropdown { width: 100%; display: flex; justify-content: center; }
+            .dropdown-menu { right: auto; left: 50%; transform: translateX(-50%) translateY(10px); background: rgba(255, 255, 255, 0.9); }
+            .dropdown:hover .dropdown-menu { transform: translateX(-50%) translateY(0); }
+
+            .main-wrapper { padding-top: 100px; } 
+            
+            /* Pada mobile, matikan attachment fixed agar lancar di-scroll */
+            .hero-section, .contact-section { background-attachment: scroll; padding: 3rem 1rem; }
+            .hero-section h1 { font-size: 2.2rem; }
+
+            .stats-grid { grid-template-columns: repeat(2, 1fr); } 
+            .content-section { grid-template-columns: 1fr; }
+			
+			.slider-section { perspective: none; }
+            .slider-container, .slides, .slides img, .slide-caption { 
+                transform: none !important; 
+                transform-style: flat; 
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section { padding: 3rem 0.5rem; }
+            .hero-section h1 { font-size: 1.8rem; }
+            
+            .slides { height: 320px; }
+            
+            .slide-caption { 
+                font-size: 0.85rem; 
+                padding: 80px 16px 15px 16px;
+                min-height: 110px;
+                line-height: 1.4;
+            }
+            
+            .stats-grid { grid-template-columns: 1fr; } 
+            .stats-container { padding: 0 1rem; }
+            .slider-section { padding: 0 1rem; }
+            .content-section { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-wrapper">
+		<header class="main-header">
+			<div class="logo">Melah <span>Raya</span></div>
+			
+			<div class="hamburger" onclick="toggleMenu()">☰</div>
+			
+			<div class="nav-container" id="nav-menu">
+				<ul class="nav-links">
+					<li><a href="#profil" onclick="toggleMenu()">Profil</a></li>
+					<li><a href="#unit" onclick="toggleMenu()">Daftar Unit</a></li>
+					<li><a href="#layanan" onclick="toggleMenu()">Layanan Kami</a></li>
+					<li><a href="#kontak" onclick="toggleMenu()">Kontak</a></li>
+				</ul>
+				
+				<div class="dropdown">
+					<button class="dropdown-toggle" title="Menu Karyawan">▼</button> 
+					<ul class="dropdown-menu">
+						<li><a href="login.html">🔒 Login Karyawan</a></li>
+					</ul>
+				</div>
+			</div>
+		</header>
+    </div>
+
+    <div class="main-wrapper">
+        <section id="profil" class="hero-section">
+            <div class="hero-container">
+                <div class="interactive-card">
+                    <div class="hero-badge">Mitra Terpercaya Alat Berat</div>
+                    <h1>Dua Dekade Mendukung Industri <br><span>Pertambangan Indonesia</span></h1>
+                    <p>Melah Raya adalah perusahaan penyedia jasa penyewaan alat berat dengan operator berpengalaman yang berdiri sejak tahun 2002. Dengan rekam jejak lebih dari dua dekade, kami telah menjadi mitra terpercaya dalam mendukung berbagai proyek skala besar, khususnya di sektor pertambangan batu bara.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="value">20+</div>
+                    <div class="label">Unit Alat Berat</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">600+ Ha</div>
+                    <div class="label">Land Clearing per Tahun</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">10+ Thn</div>
+                    <div class="label">Pengalaman Operator</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">200+</div>
+                    <div class="label">Jam Kerja Mesin per Unit</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="unit" class="slider-section">
+            <div class="slider-title">Armada & <span>Operasional Lapangan</span></div>
+            <div class="slider-container" id="parallaxCard">
+                <div class="slides" onclick="toggleCaption(this)">
+                    <img src="Foto_1.jpeg" alt="Unit 1">
+                    <div class="slide-caption">Unit Alat Berat dan Base Camp Melah Raya</div>
+                </div>
+                <div class="slides" onclick="toggleCaption(this)">
+                    <img src="Foto_5.jpeg" alt="Unit 2">
+                    <div class="slide-caption">Aktivitas Land Clearing & Support Drillpad</div>
+                </div>
+                <div class="slides" onclick="toggleCaption(this)">
+                    <img src="Foto_7.jpeg" alt="Unit 3">
+                    <div class="slide-caption">Dokumentasi hasil pengerjaan kolam WMP di area tambang</div>
+                </div>
+                <div class="slides" onclick="toggleCaption(this)">
+                    <img src="Foto_8.jpeg" alt="Unit 4">
+                    <div class="slide-caption">Pembersihan area tambang: pengangkutan kayu dengan lowboy untuk mendukung pemanfaatan limbah</div>
+                </div>
+
+                <button class="prev" onclick="plusSlides(-1, event)">&#10094;</button>
+                <button class="next" onclick="plusSlides(1, event)">&#10095;</button>
+            </div>
+            
+            <div class="dot-container">
+                <span class="dot" onclick="currentSlide(1)"></span>
+                <span class="dot" onclick="currentSlide(2)"></span>
+                <span class="dot" onclick="currentSlide(3)"></span>
+                <span class="dot" onclick="currentSlide(4)"></span>
+            </div>
+
+            <div class="btn-container-center">
+                <a href="daftar-unit.html" class="btn-more">Daftar Unit Lengkap</a>
+            </div>
+        </section>
+
+        <section id="layanan" class="content-section">
+            <div class="content-box interactive-card">
+                <h2>Kemitraan Strategis dengan <br><span>PT Berau Coal</span></h2>
+                <p>Sejak tahun 2021, Melah Raya menjalin kemitraan strategis dengan PT Berau Coal. Melalui kolaborasi ini, kami berkomitmen untuk menyediakan solusi tepat waktu dan sesuai dengan standar industri yang ketat.</p>
+                
+                <div class="location-box">
+                    <h4>Titik Operasional Unit</h4>
+                    <ul class="location-list">
+                        <li class="location-item">Binungan (BMO)</li>
+                        <li class="location-item">Sambarata (SMO)</li>
+                        <li class="location-item">Gurimbang (GMO)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="content-box interactive-card">
+                <h2>Cakupan Pekerjaan <span>& Kompetensi</span></h2>
+                <p>Didukung armada prima dan tim ahli yang andal, kami sukses merampungkan berbagai cakupan tugas penting di antaranya:</p>
+                <ul class="service-list">
+                    <li>Land Clearing (Pembersihan Lahan)</li>
+                    <li>Support Kegiatan Drillpad Geologi & Geotek</li>
+                    <li>Pembangunan Water Monitoring Point (WMP)</li>
+                    <li>Aktivitas Pendukung Operasional Utama</li>
+                </ul>
+
+                <a href="kompetensi.html" class="btn-more">Detail Kompetensi Kerja</a>
+            </div>
+        </section>
+
+        <section id="kontak" class="contact-section">
+            <div class="contact-card-modern">
+                <div class="contact-header">
+                    <h2>Hubungi Kami</h2>
+                    <p>Butuh bantuan?<br>Tim kami siap melayani kebutuhan operasional Anda.</p>
+                </div>
+                
+                <div class="contact-grid-modern">
+                    <a href="tel:+6281362108535" class="card-item">
+                        <div class="icon-box">📞</div>
+                        <div class="content">
+                            <span class="label">Telepon</span>
+                            <span class="value">+62 813-6210-8535</span>
+                        </div>
+                    </a>
+                    <a href="mailto:melahraya.cv@gmail.com" class="card-item">
+                        <div class="icon-box">✉️</div>
+                        <div class="content">
+                            <span class="label">E-mail</span>
+                            <span class="value">melahraya.cv@gmail.com</span>
+                        </div>
+                    </a>
+                    <div class="card-item no-link">
+                        <div class="icon-box">📍</div>
+                        <div class="content">
+                            <span class="label">Kantor Utama</span>
+                            <span class="value">Lung Melah, Telen, Kutai Timur</span>
+                        </div>
+                    </div>
+                    <div class="card-item no-link">
+                        <div class="icon-box">🏗️</div>
+                        <div class="content">
+                            <span class="label">Operasional Berau</span>
+                            <span class="value">Lanan Jaya, Teluk Bayur</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            &copy; 2026 Melah Raya. Semua Hak Cipta Dilindungi Undang-Undang.
+        </footer>
+    </div>
+
+    <script>
+        let slideIndex = 1;
+        showSlides(slideIndex);
+        
+        function plusSlides(n, event) { 
+            if(event) event.stopPropagation();
+            showSlides(slideIndex += n); 
+        }
+        function currentSlide(n) { showSlides(slideIndex = n); }
+        
+        function showSlides(n) {
+            let i;
+            let slides = document.getElementsByClassName("slides");
+            let dots = document.getElementsByClassName("dot");
+            if (n > slides.length) {slideIndex = 1}    
+            if (n < 1) {slideIndex = slides.length}
+            for (i = 0; i < slides.length; i++) { 
+                slides[i].style.display = "none"; 
+                slides[i].classList.remove('hide-text'); 
+            }
+            for (i = 0; i < dots.length; i++) { dots[i].className = dots[i].className.replace(" active", ""); }
+            slides[slideIndex-1].style.display = "block";  
+            dots[slideIndex-1].className += " active";
+        }
+
+        function toggleCaption(element) {
+            element.classList.toggle('hide-text');
+        }
+
+        const scene = document.getElementById('unit');
+        const card = document.getElementById('parallaxCard');
+
+        if (window.innerWidth > 820) {
+            scene.addEventListener('mousemove', (e) => {
+                const rect = scene.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -7;
+                const rotateY = ((x - centerX) / centerX) * 7;
+                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            scene.addEventListener('mouseleave', () => {
+                card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            });
+        }
+
+		function toggleMenu() {
+            if (window.innerWidth <= 820) {
+			    const nav = document.getElementById('nav-menu');
+			    nav.classList.toggle('active');
+            }
+		}
+    </script>
+</body>
+</html>
